@@ -55,8 +55,19 @@ namespace OZW {
 					break;
 				}
 				case OpenZWave::ValueID::ValueType_List: {
-					::std::string val(*Nan::Utf8String( info[validx] ));
-					OZWManager( SetValue, *vit, val);
+					int32 val = Nan::To<Integer>(info[validx]).ToLocalChecked()->Value();
+					::std::vector<int32> intlist;
+					OZWManager(GetValueListValues, *vit, &intlist);
+					int32 index = 0;
+					for (auto & elem : intlist) {
+						if (elem == val) {
+							::std::vector<::std::string> strlist;
+							OZWManager(GetValueListItems, *vit, &strlist);
+							OZWManager(SetValueListSelection, *vit, strlist.at(index));
+							break;
+						}
+						index++;
+					}
 					break;
 				}
 				case OpenZWave::ValueID::ValueType_Short: {
